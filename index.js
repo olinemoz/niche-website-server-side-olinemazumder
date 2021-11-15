@@ -49,7 +49,7 @@ async function run() {
         const reviewCollections = database.collection("reviews");
 
         // Api Operations
-        app.get('/users/:email', async (req, res) => {
+        app.get('/users/:email',verifyToken, async (req, res) => {
             const email = req.params.email;
             const query = {email: email};
             const user = await usersCollections.findOne(query);
@@ -96,21 +96,28 @@ async function run() {
         })
 
         //Getting All Cars
-        app.get('/cars', async (req, res) => {
+        app.get('/cars',verifyToken, async (req, res) => {
             const cars = await carCollections.find().toArray();
             res.json(cars);
         })
 
+        app.delete('/cars/:deleteOrder', async (req, res) => {
+            const deleteOrder = req.params.deleteOrder
+            const query = {_id: ObjectId(deleteOrder)}
+            const result = await carCollections.deleteOne(query);
+            res.json(result)
+        })
+
         //Getting Specific Cars
 
-        app.get('/cars/:carProducts', async (req, res) => {
+        app.get('/cars/:carProducts',verifyToken, async (req, res) => {
             const id = req.params.carProducts
             const query = {_id: ObjectId(id)};
             const result = await carCollections.findOne(query)
             res.json(result)
         })
         // User Based Order
-        app.get('/orders/:email', async (req, res) => {
+        app.get('/orders/:email',verifyToken, async (req, res) => {
             const email = req.params.email
             const query = {email: email}
             const cursor = orderCollections.find(query);
@@ -133,7 +140,7 @@ async function run() {
         })
 
         // Admin Finding All Orders
-        app.get('/orders', async (req, res) => {
+        app.get('/orders',verifyToken, async (req, res) => {
             const cursor = orderCollections.find({});
             const result = await cursor.toArray()
             res.send(result)
@@ -169,7 +176,7 @@ async function run() {
             res.json(result)
         })
         // Getting User Review
-        app.get('/reviews', async (req, res) => {
+        app.get('/reviews',verifyToken, async (req, res) => {
             const cursor = reviewCollections.find({});
             const result = await cursor.toArray()
             res.send(result)
